@@ -14,12 +14,13 @@ class VideoViewerWidget extends StatefulWidget {
 }
 
 class _VideoViewerWidgetState extends State<VideoViewerWidget> {
+  bool isplaying = false;
   @override
-  void dispose() {
-    
-    widget.videocontroller?.dispose();
-    super.dispose();
+  void initState() {
+    widget.videocontroller?.initialize();
+    super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -27,11 +28,24 @@ class _VideoViewerWidgetState extends State<VideoViewerWidget> {
       child: AspectRatio(
           aspectRatio: widget.videocontroller!.value.aspectRatio,
           child: GestureDetector(
-              onTap: () async {
-                await widget.videocontroller!.play();
+              onTap: () {
+                if (isplaying) {
+                  widget.videocontroller!.pause();
+
+                } else {
+                  widget.videocontroller!.play();
+                }
+                setState(() {
+                  isplaying=!isplaying;
+                });
               },
-              child: CachedVideoPlayerPlus(
-                widget.videocontroller!,
+              child: Stack(
+                children: [
+                  CachedVideoPlayerPlus(
+                    widget.videocontroller!,
+                  ),
+                  Icon(isplaying ? null : Icons.play_arrow)
+                ],
               ))),
     );
   }

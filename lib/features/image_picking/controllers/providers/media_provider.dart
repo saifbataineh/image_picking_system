@@ -6,75 +6,75 @@ import 'package:flutter/material.dart';
 import 'package:image_picking_system/core/services/picking_files_service.dart';
 
 class MediaProvider extends ChangeNotifier {
+  bool noSelected = false;
   FilePickerResult? multipleImageAndVideoResult;
-  FilePickerResult? multipleImagesResult;
-  FilePickerResult? multipleVideosResult;
-  FilePickerResult? singleImageResult;
-  FilePickerResult? singleVideoResult;
+
+  List<File?> mulitpleImageFile = [];
+  File? singleImageFile;
 
   List<CachedVideoPlayerPlusController?> videocontrollers = [];
   CachedVideoPlayerPlusController? videocontroller;
-  void addingMultipleImagesAndVideos() async {
-    multipleImageAndVideoResult =
-        await PickingFilesService.addingMultipleImagesAndVideos();
-    if (multipleImageAndVideoResult != null) {
-      print('object3${multipleImageAndVideoResult!.files}');
-
-      notifyListeners();
-    } else {
-      print(" user didn't pick anything");
-      // User canceled the picker
-    }
-  }
 
   void addingMultipleImages() async {
-    multipleImagesResult = await PickingFilesService.addingMultipleImages();
-    if (multipleImagesResult != null) {
-      notifyListeners();
-    } else {
-      print(" user didn't pick anything");
+    FilePickerResult? multipleImagesResult =
+        await PickingFilesService.addingMultipleImages();
+    if (multipleImagesResult == null) {
+      noSelected = true;
     }
+    multipleImagesResult!.files.forEach((image) {
+      mulitpleImageFile.add(File(image.path ?? ''));
+    });
+    notifyListeners();
   }
 
   void addingMultipleVideos() async {
-    multipleVideosResult = await PickingFilesService.addingMultipleVideos();
+    FilePickerResult? multipleVideosResult =
+        await PickingFilesService.addingMultipleVideos();
     if (multipleVideosResult != null) {
-      multipleVideosResult!.files.forEach(
-        (element) {
+      multipleVideosResult.files.forEach(
+        (singleVideo) {
           final controller =
-              CachedVideoPlayerPlusController.file(File(element.path!))
-                ..initialize();
+              CachedVideoPlayerPlusController.file(File(singleVideo.path!));
 
           videocontrollers.add(controller);
         },
       );
-
-      notifyListeners();
     } else {
-      print(" user didn't pick anything");
+      noSelected = true;
     }
+    notifyListeners();
   }
 
   void addingSingleVideo() async {
-    singleVideoResult = await PickingFilesService.addingSingleVideo();
+    FilePickerResult? singleVideoResult =
+        await PickingFilesService.addingSingleVideo();
     if (singleVideoResult != null) {
-      videocontroller = CachedVideoPlayerPlusController.file(
-          File(singleVideoResult!.files.single.path!))
-        ..initialize().then((value) {
-          videocontroller!.play();
-        });
-      notifyListeners();
+      File? singleVideoFile = File(singleVideoResult.files.single.path!);
+      videocontroller = CachedVideoPlayerPlusController.file(singleVideoFile);
     } else {
-      // User canceled the picker
+      noSelected = true;
     }
+    notifyListeners();
   }
 
   void addingSingleImage() async {
-    singleImageResult = await PickingFilesService.addingSingleImage();
+    FilePickerResult? singleImageResult =
+        await PickingFilesService.addingSingleImage();
     if (singleImageResult != null) {
-      notifyListeners();
+      singleImageFile = File(singleImageResult.files.single.path!);
     } else {
-      print(" user didn't pick anything");
+      noSelected = true;
     }
+    notifyListeners();
+  }
+
+  void addingMultipleImagesAndVideos() async {
+    multipleImageAndVideoResult =
+        await PickingFilesService.addingMultipleImagesAndVideos();
+    if (multipleImageAndVideoResult != null) {
+    } else {
+      noSelected = true;
+    }
+    notifyListeners();
   }
 }

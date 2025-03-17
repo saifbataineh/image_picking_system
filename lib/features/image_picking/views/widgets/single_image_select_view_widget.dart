@@ -10,21 +10,27 @@ class SingleImageSelectViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MediaProvider>(
-      builder: (context, provider, child) {
+    return Selector<MediaProvider,File?>(
+      selector: (p0, p1) {
+        return p1.singleImageFile;
+      },
+      builder: (context, selector, child) {
+      
+        
         return Column(
           children: [
             ElevatedButton(
               onPressed: () async {
-                provider.addingSingleImage();
+                context.read<MediaProvider>().addingSingleImage();
+                
               },
               child: const Text("pickImage"),
             ),
-            if (provider.singleImageResult != null)
+            if (context.read<MediaProvider>().singleImageFile!=null)
               SizedBox(
                 height: 200,
                 child: Image.file(
-                  File(provider.singleImageResult!.files.single.path!),
+                  context.read<MediaProvider>().singleImageFile!,
                 ),
               ),
           ],

@@ -1,0 +1,59 @@
+import 'dart:io';
+
+import 'package:cached_video_player_plus/cached_video_player_plus.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picking_system/features/image_picking/controllers/providers/media_provider.dart';
+import 'package:image_picking_system/features/image_picking/views/widgets/video_viewer_widget.dart';
+import 'package:provider/provider.dart';
+
+class MultipleVideosSelectViewWidget extends StatefulWidget {
+  const MultipleVideosSelectViewWidget({super.key});
+
+  @override
+  State<MultipleVideosSelectViewWidget> createState() => _MultipleVideosSelectViewWidgetState();
+}
+
+class _MultipleVideosSelectViewWidgetState extends State<MultipleVideosSelectViewWidget> {
+  @override
+  void dispose() {
+    context.read<MediaProvider>().videocontrollers.forEach((videoController){
+      videoController!.dispose();
+    });
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MediaProvider,List<CachedVideoPlayerPlusController?>>(
+    selector: (_, selector) {
+      return selector.videocontrollers;
+    },
+      builder: (context, selector,child) {
+        return Column(
+          children: [
+            ElevatedButton(
+              onPressed: () async {
+               context.read<MediaProvider>().addingMultipleVideos();
+               
+              },
+              child: const Text("pick multiple videos"),
+            ),
+            if (context.read<MediaProvider>().videocontrollers.isNotEmpty)
+              SizedBox(
+                height: 200,
+                child: ListView.builder(
+                  itemCount: context.read<MediaProvider>().videocontrollers.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return VideoViewerWidget(
+                        videocontroller: context.read<MediaProvider>().videocontrollers[index]);
+                  },
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
