@@ -1,37 +1,27 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picking_system/core/services/picking_files_service.dart';
+import 'package:image_picking_system/features/image_picking/controllers/providers/media_provider.dart';
+import 'package:provider/provider.dart';
 
-class MultipleImagesAndVideosViewsWeidget extends StatefulWidget {
+class MultipleImagesAndVideosViewsWeidget extends StatelessWidget {
   const MultipleImagesAndVideosViewsWeidget({super.key});
 
-  @override
-  State<MultipleImagesAndVideosViewsWeidget> createState() =>
-      _MultipleImagesAndVideosViewsWeidgetState();
-}
-
-class _MultipleImagesAndVideosViewsWeidgetState
-    extends State<MultipleImagesAndVideosViewsWeidget> {
-  FilePickerResult? multipleImageAndVideoResult;
-  @override
+ @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () async {
-            multipleImageAndVideoResult = await FilePicker.platform.pickFiles(
-              type: FileType.media,
-              allowMultiple: true,
-            );
-            if (multipleImageAndVideoResult != null) {
-              print(multipleImageAndVideoResult!.files);
-              setState(() {});
-            } else {
-              // User canceled the picker
-            }
-          },
-          child: const Text("pick videos and photos"),
-        ),
-      ],
+    return Consumer<MediaProvider>(
+      builder: (context, provider, child) {
+        return Column(
+          children: [
+            ElevatedButton(
+              onPressed: () async {
+                provider.addingMultipleImagesAndVideos();
+              },
+              child: const Text("pick videos and photos"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
