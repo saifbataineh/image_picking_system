@@ -8,8 +8,9 @@ import 'package:image_picking_system/core/services/picking_files_service.dart';
 class MediaProvider extends ChangeNotifier {
   bool noSelected = false;
   FilePickerResult? multipleImageAndVideoResult;
-
-  List<File?> mulitpleImageFile = [];
+  List<CachedVideoPlayerPlusController?> videosInImageAndVideoscontrollers = [];
+List<File?> mulitpleImageInIamgeAndVideosFiles = [];
+  List<File?> mulitpleImageFiles = [];
   File? singleImageFile;
 
   List<CachedVideoPlayerPlusController?> videocontrollers = [];
@@ -20,10 +21,11 @@ class MediaProvider extends ChangeNotifier {
         await PickingFilesService.addingMultipleImages();
     if (multipleImagesResult == null) {
       noSelected = true;
+    } else {
+      multipleImagesResult!.files.forEach((image) {
+        mulitpleImageFiles = [...mulitpleImageFiles, File(image.path ?? '')];
+      });
     }
-    multipleImagesResult!.files.forEach((image) {
-      mulitpleImageFile.add(File(image.path ?? ''));
-    });
     notifyListeners();
   }
 
@@ -35,8 +37,7 @@ class MediaProvider extends ChangeNotifier {
         (singleVideo) {
           final controller =
               CachedVideoPlayerPlusController.file(File(singleVideo.path!));
-
-          videocontrollers.add(controller);
+          videocontrollers = [...videocontrollers, controller];
         },
       );
     } else {
@@ -72,6 +73,19 @@ class MediaProvider extends ChangeNotifier {
     multipleImageAndVideoResult =
         await PickingFilesService.addingMultipleImagesAndVideos();
     if (multipleImageAndVideoResult != null) {
+      multipleImageAndVideoResult!.files.forEach((element) {
+        if (element.path!.endsWith("mp4")) {
+          print(element.path!);
+          final controller =
+              CachedVideoPlayerPlusController.file(File(element.path ?? ''));
+          videosInImageAndVideoscontrollers = [
+            ...videosInImageAndVideoscontrollers,
+            controller
+          ];
+        } else {
+          mulitpleImageInIamgeAndVideosFiles = [...mulitpleImageInIamgeAndVideosFiles, File(element.path ?? '')];
+        }
+      });
     } else {
       noSelected = true;
     }

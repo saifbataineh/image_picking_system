@@ -11,10 +11,12 @@ class MultipleImagesSelectViewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Selector<MediaProvider,List<File?>>(
-    selector: (p0, p1) {
-      return p1.mulitpleImageFile;
-    },
-      builder: (context, selector,child){
+   selector: (_, selector) {
+    return  selector.mulitpleImageFiles;
+   },
+  
+      builder: (context, provider,child){
+        
         return Column(
           children: [
             ElevatedButton(
@@ -25,17 +27,17 @@ class MultipleImagesSelectViewWidget extends StatelessWidget {
               },
               child: const Text("pick multiple photos"),
             ),
-            if (context.read<MediaProvider>().mulitpleImageFile.isNotEmpty)
+            if (context.read<MediaProvider>().mulitpleImageFiles.isNotEmpty)
               SizedBox(
                 height: 200,
                 child: ListView.builder(
-                  itemCount: context.read<MediaProvider>().mulitpleImageFile.length,
+                  itemCount: context.read<MediaProvider>().mulitpleImageFiles.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) => SizedBox(
                     height: 200,
                     width: 200,
                     child: Image.file(
-                      context.read<MediaProvider>().mulitpleImageFile[index]!,
+                      context.read<MediaProvider>().mulitpleImageFiles![index]!,
                     ),
                   ),
                 ),
