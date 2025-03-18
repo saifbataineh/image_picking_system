@@ -38,6 +38,7 @@ class MultipleImagesAndVideosViewsWeidget extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
                     return VideoViewerWidget(
+                      scrollController: ScrollController(),
                         videocontroller: context
                             .read<MediaProvider>()
                             .videosInImageAndVideoscontrollers![index]);

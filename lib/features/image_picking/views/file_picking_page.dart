@@ -19,32 +19,30 @@ class FilePickingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: ChangeNotifierProvider(
-            create: (context) => MediaProvider(),
-            child: Selector<MediaProvider, bool>(
-                selector: (context, mediaProvider) {
-              if (context.read<MediaProvider>().noSelected) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  ShowSnackBarService.showErrorSnackBar(context);
-                  context.read<MediaProvider>().noSelected = false;
-                });
-              }
-              return mediaProvider.noSelected;
-            }, builder: (context, selector, child) {
-              return const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SingleImageSelectViewWidget(),
-                  MultipleImagesSelectViewWidget(),
-                  SingleVideoSelectViewWidget(),
-                  MultipleVideosSelectViewWidget(),
-                  MultipleImagesAndVideosViewsWeidget(),
-                ],
-              );
-            }),
-          ),
+      body: SingleChildScrollView(
+        child: ChangeNotifierProvider(
+          create: (context) => MediaProvider(),
+          child: Selector<MediaProvider, bool>(
+              selector: (context, mediaProvider) {
+            if (context.read<MediaProvider>().noSelected) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ShowSnackBarService.showErrorSnackBar(context);
+                context.read<MediaProvider>().noSelected = false;
+              });
+            }
+            return mediaProvider.noSelected;
+          }, builder: (context, selector, child) {
+            return const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+             /*    SingleImageSelectViewWidget(),
+                MultipleImagesSelectViewWidget(),
+                SingleVideoSelectViewWidget(), */
+                MultipleVideosSelectViewWidget(),
+               /*  MultipleImagesAndVideosViewsWeidget(), */
+              ],
+            );
+          }),
         ),
       ),
     );

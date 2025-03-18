@@ -11,18 +11,21 @@ class SingleVideoSelectViewWidget extends StatefulWidget {
   const SingleVideoSelectViewWidget({super.key});
 
   @override
-  State<SingleVideoSelectViewWidget> createState() => _SingleVideoSelectViewWidgetState();
+  State<SingleVideoSelectViewWidget> createState() =>
+      _SingleVideoSelectViewWidgetState();
 }
 
-class _SingleVideoSelectViewWidgetState extends State<SingleVideoSelectViewWidget> {
+class _SingleVideoSelectViewWidgetState
+    extends State<SingleVideoSelectViewWidget> {
   @override
   void dispose() {
-    context.read<MediaProvider>().videocontroller!.dispose(); 
-       super.dispose();
+    context.read<MediaProvider>().videocontroller!.dispose();
+    super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    return Selector<MediaProvider,CachedVideoPlayerPlusController?>(
+    return Selector<MediaProvider, CachedVideoPlayerPlusController?>(
       selector: (_, selector) => selector.videocontroller,
       builder: (context, selector, child) {
         return Column(
@@ -34,7 +37,10 @@ class _SingleVideoSelectViewWidgetState extends State<SingleVideoSelectViewWidge
               child: const Text("pickVideo"),
             ),
             if (context.read<MediaProvider>().videocontroller != null)
-              VideoViewerWidget(videocontroller: context.read<MediaProvider>().videocontroller),
+              VideoViewerWidget(
+                  scrollController: ScrollController(),
+                  videocontroller:
+                      context.read<MediaProvider>().videocontroller),
           ],
         );
       },
