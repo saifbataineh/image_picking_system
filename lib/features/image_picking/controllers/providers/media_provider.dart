@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picking_system/core/services/picking_files_service.dart';
 
 class MediaProvider extends ChangeNotifier {
-  bool noSelected = false;
+  bool nullFiles = false;
   FilePickerResult? multipleImageAndVideoResult;
   List<CachedVideoPlayerPlusController?> videosInImageAndVideoscontrollers = [];
 List<File?> mulitpleImageInIamgeAndVideosFiles = [];
@@ -14,13 +14,14 @@ List<File?> mulitpleImageInIamgeAndVideosFiles = [];
   File? singleImageFile;
 
   List<CachedVideoPlayerPlusController?> videocontrollers = [];
+  bool isMuted=false;
   CachedVideoPlayerPlusController? videocontroller;
 
   void addingMultipleImages() async {
     FilePickerResult? multipleImagesResult =
         await PickingFilesService.addingMultipleImages();
     if (multipleImagesResult == null) {
-      noSelected = true;
+      nullFiles = true;
     } else {
       multipleImagesResult!.files.forEach((image) {
         mulitpleImageFiles = [...mulitpleImageFiles, File(image.path ?? '')];
@@ -41,7 +42,7 @@ List<File?> mulitpleImageInIamgeAndVideosFiles = [];
         },
       );
     } else {
-      noSelected = true;
+      nullFiles = true;
     }
     notifyListeners();
   }
@@ -53,7 +54,7 @@ List<File?> mulitpleImageInIamgeAndVideosFiles = [];
       File? singleVideoFile = File(singleVideoResult.files.single.path!);
       videocontroller = CachedVideoPlayerPlusController.file(singleVideoFile);
     } else {
-      noSelected = true;
+      nullFiles = true;
     }
     notifyListeners();
   }
@@ -64,7 +65,7 @@ List<File?> mulitpleImageInIamgeAndVideosFiles = [];
     if (singleImageResult != null) {
       singleImageFile = File(singleImageResult.files.single.path!);
     } else {
-      noSelected = true;
+      nullFiles = true;
     }
     notifyListeners();
   }
@@ -87,7 +88,7 @@ List<File?> mulitpleImageInIamgeAndVideosFiles = [];
         }
       });
     } else {
-      noSelected = true;
+      nullFiles = true;
     }
     notifyListeners();
   }

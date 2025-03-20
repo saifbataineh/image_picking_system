@@ -1,18 +1,17 @@
+import 'dart:async';
+
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:image_picking_system/features/image_picking/controllers/providers/media_provider.dart';
+import 'package:provider/provider.dart';
 
 class VideoViewerWidget extends StatefulWidget {
   const VideoViewerWidget({
     super.key,
     this.height = 820,
     this.index = 0,
-    required this.videocontroller,
-    required this.scrollController,
   });
 
-  final CachedVideoPlayerPlusController? videocontroller;
-  final ScrollController scrollController;
   final int index;
   final double height;
 
@@ -21,36 +20,51 @@ class VideoViewerWidget extends StatefulWidget {
 }
 
 class _VideoViewerWidgetState extends State<VideoViewerWidget> {
-  bool isplaying = false;
-  VoidCallback? _listener;
+  bool isShown = false;
+  bool isMuted = false;
+
   @override
   void initState() {
-    print("object21 ${widget.index}");
-    _listener = () {
-      if (widget.scrollController.offset > widget.height * widget.index) {
-       if(!isplaying){
-        widget.videocontroller!.play();
-        isplaying=true;
-
-       }
-      }
-      if (widget.scrollController.offset > widget.height * (widget.index + 1)) {
-        if(isplaying){
-
-        widget.videocontroller!.pause();
-        isplaying=false;
-        }
-      }
-    };
-    widget.videocontroller?.initialize();
-    widget.scrollController.addListener(_listener!);
     super.initState();
+    isMuted = context.read<MediaProvider>().isMuted;
+    context.read<MediaProvider>().videocontrollers[widget.index]?.initialize();
+
+    context.read<MediaProvider>().videocontrollers[widget.index]
+      ?..play()
+      ..setLooping(true);
   }
 
   @override
   void dispose() {
-    widget.scrollController.removeListener(_listener!);
+    /* widget.scrollController.removeListener(_listener!); */
+    context.read<MediaProvider>().videocontrollers[widget.index]?.dispose();
     super.dispose();
+  }
+
+  _volumeChange() async {
+    if (isMuted) {
+      context
+          .read<MediaProvider>()
+          .videocontrollers[widget.index]
+          ?.setVolume(1);
+    } else {
+      context.read<MediaProvider>().isMuted = true;
+      context
+          .read<MediaProvider>()
+          .videocontrollers[widget.index]
+          ?.setVolume(0);
+    }
+    context.read<MediaProvider>().isMuted = !isMuted;
+
+    setState(() {
+      isMuted = !isMuted;
+      isShown = true;
+    });
+    Timer(const Duration(seconds: 3), () {
+      setState(() {
+        isShown = false;
+      });
+    });
   }
 
   @override
@@ -59,24 +73,52 @@ class _VideoViewerWidgetState extends State<VideoViewerWidget> {
     return SizedBox(
       height: height,
       child: AspectRatio(
-          aspectRatio: widget.videocontroller!.value.aspectRatio,
+          aspectRatio: context
+              .read<MediaProvider>()
+              .videocontrollers[widget.index]!
+              .value
+              .aspectRatio,
           child: GestureDetector(
+              onLongPressStart: (longPressStarted) {
+                context
+                    .read<MediaProvider>()
+                    .videocontrollers[widget.index]!
+                    .pause();
+              },
+              onLongPressUp: () {
+                context
+                    .read<MediaProvider>()
+                    .videocontrollers[widget.index]!
+                    .play();
+              },
               onTap: () {
-                if (isplaying) {
-                  widget.videocontroller!.pause();
-                } else {
-                  widget.videocontroller!.play();
-                }
-                setState(() {
-                  isplaying = !isplaying;
-                });
+                _volumeChange();
               },
               child: Stack(
                 children: [
                   CachedVideoPlayerPlus(
-                    widget.videocontroller!,
+                    context
+                        .read<MediaProvider>()
+                        .videocontrollers[widget.index]!,
                   ),
-                  Icon(isplaying ? null : Icons.play_arrow)
+                  Center(
+                    child: isShown
+                        ? Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              size: 50,
+                              isMuted
+                                  ? Icons.volume_off_rounded
+                                  : Icons.volume_up,
+                            ),
+                          )
+                        : SizedBox.shrink(),
+                  ),
+
+                  /*  isShown?Icon(Icons.volume_down):Icon(Icons.abc) */
                 ],
               ))),
     );

@@ -24,15 +24,15 @@ class FilePickingPage extends StatelessWidget {
           create: (context) => MediaProvider(),
           child: Selector<MediaProvider, bool>(
               selector: (context, mediaProvider) {
-            if (context.read<MediaProvider>().noSelected) {
+            if (context.read<MediaProvider>().nullFiles) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 ShowSnackBarService.showErrorSnackBar(context);
-                context.read<MediaProvider>().noSelected = false;
+                context.read<MediaProvider>().nullFiles = false;
               });
             }
-            return mediaProvider.noSelected;
+            return mediaProvider.nullFiles;
           }, builder: (context, selector, child) {
-            return const Column(
+            return  const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
              /*    SingleImageSelectViewWidget(),

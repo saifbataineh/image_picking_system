@@ -34,13 +34,12 @@ class _SingleVideoSelectViewWidgetState
               onPressed: () async {
                 context.read<MediaProvider>().addingSingleVideo();
               },
-              child: const Text("pickVideo"),
+              child: const Text("Pick Video"),
             ),
             if (context.read<MediaProvider>().videocontroller != null)
-              VideoViewerWidget(
-                  scrollController: ScrollController(),
-                  videocontroller:
-                      context.read<MediaProvider>().videocontroller),
+              const VideoViewerWidget(
+                  /* scrollController: ScrollController(), */
+              )
           ],
         );
       },
