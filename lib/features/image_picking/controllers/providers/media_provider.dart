@@ -7,6 +7,7 @@ import 'package:image_picking_system/core/services/picking_files_service.dart';
 
 class MediaProvider extends ChangeNotifier {
   bool nullFiles = false;
+   FilePickerResult? multipleVideosResult;
   FilePickerResult? multipleImageAndVideoResult;
   List<CachedVideoPlayerPlusController?> videosInImageAndVideoscontrollers = [];
 List<File?> mulitpleImageInIamgeAndVideosFiles = [];
@@ -23,28 +24,32 @@ List<File?> mulitpleImageInIamgeAndVideosFiles = [];
     if (multipleImagesResult == null) {
       nullFiles = true;
     } else {
-      multipleImagesResult!.files.forEach((image) {
+      for (var image in multipleImagesResult.files) {
         mulitpleImageFiles = [...mulitpleImageFiles, File(image.path ?? '')];
-      });
+      }
     }
     notifyListeners();
   }
 
   void addingMultipleVideos() async {
-    FilePickerResult? multipleVideosResult =
+     multipleVideosResult =
         await PickingFilesService.addingMultipleVideos();
     if (multipleVideosResult != null) {
-      multipleVideosResult.files.forEach(
-        (singleVideo) {
+      for (var singleVideo in multipleVideosResult!.files) {
           final controller =
               CachedVideoPlayerPlusController.file(File(singleVideo.path!));
+            
           videocontrollers = [...videocontrollers, controller];
-        },
-      );
+        }
     } else {
       nullFiles = true;
     }
     notifyListeners();
+  }
+  CachedVideoPlayerPlusController getVideoController(int index,){
+ final controller =
+              CachedVideoPlayerPlusController.file(File(multipleVideosResult!.files[index].path!));
+              return controller;
   }
 
   void addingSingleVideo() async {

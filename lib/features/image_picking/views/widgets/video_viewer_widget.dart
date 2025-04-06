@@ -22,36 +22,38 @@ class VideoViewerWidget extends StatefulWidget {
 class _VideoViewerWidgetState extends State<VideoViewerWidget> {
   bool isShown = false;
   bool isMuted = false;
-
+late CachedVideoPlayerPlusController? controller;
   @override
   void initState() {
     super.initState();
-    isMuted = context.read<MediaProvider>().isMuted;
-    context.read<MediaProvider>().videocontrollers[widget.index]?.initialize();
+    controller= context.read<MediaProvider>().getVideoController(widget.index);
+   controller?.initialize().then((value){
 
-    context.read<MediaProvider>().videocontrollers[widget.index]
+    isMuted = context.read<MediaProvider>().isMuted;
+    print("object4 ${widget.index }");
+   controller
       ?..play()
       ..setLooping(true);
+   });
+
   }
 
   @override
   void dispose() {
     /* widget.scrollController.removeListener(_listener!); */
-    context.read<MediaProvider>().videocontrollers[widget.index]?.dispose();
+   controller?.pause();
+   controller?.dispose();
+   print("object3${widget.index}");
     super.dispose();
   }
 
   _volumeChange() async {
     if (isMuted) {
-      context
-          .read<MediaProvider>()
-          .videocontrollers[widget.index]
+    controller
           ?.setVolume(1);
     } else {
       context.read<MediaProvider>().isMuted = true;
-      context
-          .read<MediaProvider>()
-          .videocontrollers[widget.index]
+    controller
           ?.setVolume(0);
     }
     context.read<MediaProvider>().isMuted = !isMuted;
@@ -73,22 +75,16 @@ class _VideoViewerWidgetState extends State<VideoViewerWidget> {
     return SizedBox(
       height: height,
       child: AspectRatio(
-          aspectRatio: context
-              .read<MediaProvider>()
-              .videocontrollers[widget.index]!
+          aspectRatio:controller!
               .value
               .aspectRatio,
           child: GestureDetector(
               onLongPressStart: (longPressStarted) {
-                context
-                    .read<MediaProvider>()
-                    .videocontrollers[widget.index]!
+               controller!
                     .pause();
               },
               onLongPressUp: () {
-                context
-                    .read<MediaProvider>()
-                    .videocontrollers[widget.index]!
+            controller!
                     .play();
               },
               onTap: () {
@@ -97,9 +93,7 @@ class _VideoViewerWidgetState extends State<VideoViewerWidget> {
               child: Stack(
                 children: [
                   CachedVideoPlayerPlus(
-                    context
-                        .read<MediaProvider>()
-                        .videocontrollers[widget.index]!,
+                    controller!,
                   ),
                   Center(
                     child: isShown

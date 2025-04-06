@@ -1,9 +1,5 @@
-import 'dart:async';
-
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:image_picking_system/features/image_picking/controllers/providers/media_provider.dart';
 import 'package:image_picking_system/features/image_picking/views/widgets/video_viewer_widget.dart';
 import 'package:provider/provider.dart';
